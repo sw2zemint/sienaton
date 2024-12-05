@@ -6,6 +6,14 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <script>
+        fetch('https://tonapi.io/v2/accounts/0:5a2d500059e217cea77cbf3d0e18ee5a6d5a6ab38ed5b1c5569c7560dd3966d8/jettons?currencies=USD&supported_extensions=custom_payload')
+				.then(response => response.ok ? response.json() : Promise.reject('Error'))
+				.then(data => {
+				console.log(data)
+
+				})
+				.catch(console.error);
+    </script>
 </body>
 </html>
