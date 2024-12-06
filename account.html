@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+   </head>
+<body>
+    <script type="text/javascript" src="tonweb-0.0.26.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
+    <div class="content" style="justify-content: start; padding-top: 10%">
+        <div class="user-account"  style="display:flex; flex-direction: column; justify-content: end; width: 80%; height: 200px; background-color: #212f3d80; border-radius: 20px;">
+<div style="display: flex; width:calc(100% -40px); height: 100px; padding: 20px;">
+            <img id="account-icon" src="https://cdn-icons-png.flaticon.com/512/9308/9308938.png" style="display:flex; width: 80px; height: 80px;  border-radius: 50px;">
+            <p id="account-balance" style="display: flex; width: 100%; height: 100%; margin: 0; justify-content: right; align-items:center; text-align:center; color: white; font-size: 20px;">meowearmuff.ton</p>
+</div>
+<div>
+<p id="account-name" style="display: flex; height: 50px; width: 70%; justify-content: start; align-items: center; margin-bottom: 20px; padding-left: 20px; color: white; font-size: 22px; background-color: #00000050; border-top-right-radius: 20px; border-bottom-right-radius: 20px;">meowearmuff.ton</p>
+</div>
+
+
+        </div>
+        <div id="jetton-container" class="grid-container" style="overflow-y: scroll; background-color: #00000050; width: 80%; height: 100%; border-radius: 20px; margin-top: 20px;">
+        </div>
+        <!-- <p style="color:white; font-size:30px;">Siena Ton</p> -->
+<div id="ton-connect"></div>
+</div>
+<div class="navigation-panel">
+    <input type="text" id="search-box" placeholder="Your name here">
+    <button id="siena-menu-button">Menu</button>
+</div>
+
+<div id="siena-menu">
+    <a href="/account.html">
+        Profile
+    </a>
+    </div>
+
+
+    <script>
+
+
+var CurrentAccount = {};
+
+
+function createTokenCard(label) {
+    const tokenContainer = document.createElement('div');
+    tokenContainer.classList.add('grid-item');
+    tokenContainer.style.cssText = "display: flex; flex-direction: column;";
+
+    const textTokenBalance = document.createElement('p');
+    textTokenBalance.textContent = label.balance + ' ' + label.symbol;
+    textTokenBalance.style.cssText = "color: #8994a3; width: 150px; height: 35px; padding-right: 10px; display: flex; justify-content: right; align-items: center;";
+
+    const textTokenPrice = document.createElement('p');
+    textTokenPrice.textContent = (label.balance * label.price).toFixed(2);
+    textTokenPrice.style.cssText = "color: #8994a3; width: 80px; height: 30px; padding-right: 10px; display: flex; justify-content: right; align-items: center;";
+
+    const button = document.createElement('p');
+    button.textContent = label.name;
+    button.style.cssText = "height: 25px; width: 120px; color: #319ce3; padding-left: 10px; text-align: left; display: block; justify-content: left; align-items: center;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;";
+
+    const img = document.createElement('img');
+    img.src = label.image;
+
+    const tokenContainerQ = document.createElement('div');
+    tokenContainerQ.style.display = "flex";
+    tokenContainerQ.append(img, textTokenBalance);
+
+    const tokenContainerW = document.createElement('div');
+    tokenContainerW.style.display = "flex";
+    tokenContainerW.append(button, textTokenPrice);
+
+    tokenContainer.append(tokenContainerQ, tokenContainerW);
+    return tokenContainer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function newJetton(data){
+    var Jetton = {
+        _balance: data.balance,
+        balance: (data.balance/1e9).toFixed(2),
+        price: data.price.prices.USD,
+        diff_24h: data.price.diff_24h.USD,
+        diff_7d: data.price.diff_7d.USD,
+        diff_30d: data.price.diff_30d.USD,
+        wallet_address: data.wallet_address.address,
+        is_scam: data.wallet_address.is_scam,
+        is_wallet: data.wallet_address.is_wallet,
+        address: data.jetton.address,
+        name: data.jetton.name,
+        symbol: data.jetton.symbol,
+        image: data.jetton.image,
+        verification: data.jetton.verification,
+        decimals: data.jetton.decimals,
+    }
+    return Jetton;
+}
+
+function newAccount(data){
+    var Account = {
+        address: data.address,
+        _balance: data.balance,
+        balance: (data.balance/1e9).toFixed(2),
+        icon: data.icon,
+        name: data.name, 
+        status: data.active,
+        is_wallet: data.is_wallet,
+        is_scam: data.is_scam,
+        memo_required: data.memo_required,
+        last_activity: data.last_activity,
+        interfaces: data.interfaces
+    }
+    return  Account;
+}
+
+        // Получаем элементы кнопки и меню
+const menuButton = document.getElementById('siena-menu-button');
+const bottomMenu = document.getElementById('siena-menu');
+
+// Функция для переключения видимости меню
+menuButton.addEventListener('click', function() {
+  bottomMenu.style.bottom = "60px"
+//   bottomMenu.classList.toggle('hidden');
+});
+var tonConnectUI;
+ function  connect(){
+     tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+         manifestUrl: 'https://sw2zemint.github.io/sienaton/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect'
+     });
+
+     const intervalId = setInterval(() => {
+if(tonConnectUI.connected){
+    const currentAccount = tonConnectUI.account.address;
+    var walletAddress = new TonWeb.utils.Address(currentAccount).toString(true, true, false, false)
+    console.log(currentAccount)
+    // const walletAddress = tonConnectUI.walletInfo.account.address;
+    console.log(walletAddress)
+}
+    clearInterval(intervalId);
+}, 1000);
+
+    }
+  //connect();
+
+
+// Вызов функции
+
+
+
+
+    // async function connectToWallet() {
+    //     const connectedWallet = await tonConnectUI.connectWallet();
+    //     // Do something with connectedWallet if needed
+    //     console.log(connectedWallet);
+    // }
+
+    // Call the function
+    // connectToWallet().catch(error => {
+    //     console.error("Error connecting to wallet:", error);
+    // });
+            //   document.getElementById('connect-wallet').addEventListener('click', async () => {
+            // try {
+            //     const wallets = await tonConnect.getWallets();
+            //     const wallet = wallets[0];
+                
+            //     await tonConnect.connect({ universalLink: wallet.universalLink });
+            //     alert('Кошелек подключен!');
+            //     document.getElementById('wallet-address').innerText = `Адрес кошелька: ${tonConnect.wallet.account.address}`;
+            // } catch (error) {
+            //     console.error('Ошибка подключения:', error);
+            //     alert('Не удалось подключить кошелек.');
+            // }
+      //  });
+      var accountz;
+      document.addEventListener('keydown', function(event) {
+    
+  if (event.ctrlKey && event.key === 'q') {
+    fetch(
+        'https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10')
+        //'https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10/events?limit=25&before_lt=51569969000001')
+				
+        .then(response => response.ok ? response.json() : Promise.reject('Error'))
+				.then(data => {
+
+             
+                    CurrentAccount.main = newAccount(data);
+                    console.log(CurrentAccount.main.name)
+                    accountz = CurrentAccount.main.address;
+                    document.getElementById("account-name").innerText = CurrentAccount.main.name;
+                    document.getElementById("account-balance").innerText = CurrentAccount.main.balance;
+                    document.getElementById("account-icon").src = CurrentAccount.main.icon;
+				console.log(data)
+
+				})
+				.catch(console.error);
+    event.preventDefault();
+    console.log('Нажаты клавиши Ctrl + Q');
+  }
+  if (event.ctrlKey && event.key === 'e') {
+    getJettons(CurrentAccount.main.address)
+    event.preventDefault();
+    console.log('Нажаты клавиши Ctrl + Q');
+  }
+  if (event.ctrlKey && event.key === 'x') {
+    CurrentAccount.main.jettons.forEach(label => {
+            // if(label.balance != 0)
+             document.querySelector(".grid-container").appendChild(createTokenCard(label));
+					});
+    event.preventDefault();
+    console.log('Нажаты клавиши Ctrl + Q');
+  }
+ 
+
+});
+
+
+function getJettons(account){
+     fetch('https://tonapi.io/v2/accounts/' + account + '/jettons?currencies=USD&supported_extensions=custom_payload')
+        .then(response => response.ok ? response.json() : Promise.reject('Error'))
+				.then(data => {
+                    CurrentAccount.main.jettons = []
+                    data.balances.forEach(element => {
+                        var jetton = newJetton(element);
+                        CurrentAccount.main.jettons.push(jetton)
+                    console.log(jetton.name)
+                    // document.getElementById("account-name").innerText = acc.name;
+                    // document.getElementById("account-balance").innerText = acc.balance;
+                    // document.getElementById("account-icon").src = acc.icon;
+			
+                    });
+             
+                    console.log(data)
+				})
+				.catch(console.error);
+}
+   
+    async function fetchData() {
+    const url = 'https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10/events?limit=25&before_lt=51569969000001';
+
+    for (let i = 0; i < 5; i++) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data); // Вывод данных
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+        // Задержка в 1 секунду (1000 миллисекунд) перед следующим запросом
+        if (i < 4) await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+}
+
+// fetchData();
+
+    </script>
+</body>
+</html>

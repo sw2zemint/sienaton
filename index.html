@@ -8,37 +8,70 @@
    </head>
 <body>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    
+
     <div class="content">
         <p style="color:white; font-size:30px;">Siena Ton</p>
-    <input type="text" id="search-box" placeholder="Your name here">
-    <div style="display: grid; width:50%; gap:10px;
+    <!-- <input type="text" id="search-box-web" placeholder="Your name here"> -->
+    <!-- <div style="display: grid; width:50%; gap:10px;
   grid-template-columns: repeat(2, 1fr);">
         <p style="width:100%; display:flex; justify-content:center;">Ctrl + C</p>
         <p style="width:100%; display:flex; justify-content:center;">Ctrl + V</p>
         <p style="width:100%; display:flex; justify-content:center;">Ctrl + D</p>
         <p style="width:100%; display:flex; justify-content:center;">Ctrl + S</p>
-    </div>
-    <button id="connect-wallet">Подключить кошелек</button>
-    <p id="wallet-address">Адрес кошелька: —</p>
+    </div> -->
+
+<div id="ton-connect"></div>
+</div>
+<div class="navigation-panel">
+    <input type="text" id="search-box" placeholder="Your name here">
+    <button id="siena-menu-button">Menu</button>
 </div>
 
+<div id="siena-menu">
+    <a href="/account.html">
+        Profile
+    </a>
+    </div>
 
 
     <script>
-              document.getElementById('connect-wallet').addEventListener('click', async () => {
-            try {
-                const wallets = await tonConnect.getWallets();
-                const wallet = wallets[0];
+        // Получаем элементы кнопки и меню
+const menuButton = document.getElementById('siena-menu-button');
+const bottomMenu = document.getElementById('siena-menu');
+
+// Функция для переключения видимости меню
+menuButton.addEventListener('click', function() {
+  bottomMenu.style.bottom = "60px"
+//   bottomMenu.classList.toggle('hidden');
+});
+
+    //         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    //     manifestUrl: 'https://sw2zemint.github.io/sienaton/tonconnect-manifest.json',
+    //     buttonRootId: 'ton-connect'
+    // });
+    // async function connectToWallet() {
+    //     const connectedWallet = await tonConnectUI.connectWallet();
+    //     // Do something with connectedWallet if needed
+    //     console.log(connectedWallet);
+    // }
+
+    // Call the function
+    // connectToWallet().catch(error => {
+    //     console.error("Error connecting to wallet:", error);
+    // });
+            //   document.getElementById('connect-wallet').addEventListener('click', async () => {
+            // try {
+            //     const wallets = await tonConnect.getWallets();
+            //     const wallet = wallets[0];
                 
-                await tonConnect.connect({ universalLink: wallet.universalLink });
-                alert('Кошелек подключен!');
-                document.getElementById('wallet-address').innerText = `Адрес кошелька: ${tonConnect.wallet.account.address}`;
-            } catch (error) {
-                console.error('Ошибка подключения:', error);
-                alert('Не удалось подключить кошелек.');
-            }
-        });
+            //     await tonConnect.connect({ universalLink: wallet.universalLink });
+            //     alert('Кошелек подключен!');
+            //     document.getElementById('wallet-address').innerText = `Адрес кошелька: ${tonConnect.wallet.account.address}`;
+            // } catch (error) {
+            //     console.error('Ошибка подключения:', error);
+            //     alert('Не удалось подключить кошелек.');
+            // }
+      //  });
     //  fetch('https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10/events?limit=25&before_lt=51569969000001')
 	// 			.then(response => response.ok ? response.json() : Promise.reject('Error'))
 	// 			.then(data => {
