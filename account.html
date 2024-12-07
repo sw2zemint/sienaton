@@ -10,26 +10,28 @@
     <script type="text/javascript" src="tonweb-0.0.26.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
-    <div class="content" style="justify-content: start; padding-top: 10%">
+    <div class="content">
    
-        <div class="user-account"  style="display:flex; flex-direction: column; justify-content: end; width: 100%; height: 200px;">
+        <div class="user-account"  style="display:flex; flex-direction: column; justify-content: end; width: 100%; height: 90px;">
         <div style="display:flex; justify-content: center; width: 100%; height: 40px;">
-           <p id="account-name" style="display: flex;height: 40px; width: 50%;justify-content: center;align-items: center;margin-bottom: 20px;color: white;font-size: 16px;background-color: #00000050;border-radius: 20px;">obalduy.t.me</p>
+           <p id="account-name" style="position: fixed; top: 0; display: flex;height: 50px;width: 100%;  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); justify-content: center;align-items: center;margin-bottom: 10px;color: #6187af; font-weight: bold; font-size: 14px;background-color: #17212b;">obalduy.t.me</p>
 </div>
-           <div style="display: flex; width:calc(100% -40px); height: 100px; padding: 20px;">
+           <div style="display: flex; width:calc(100% -40px); height: 0px; padding: 20px;">
             <!-- <img id="account-icon" src="https://cdn-icons-png.flaticon.com/512/9308/9308938.png" style="display:flex; width: 80px; height: 80px;  border-radius: 50px;">
             <p id="account-balance" style="display: flex; width: 100%; height: 100%; margin: 0; justify-content: right; align-items:center; text-align:center; color: white; font-size: 20px;">meowearmuff.ton</p> -->
 </div>
 </div>
-
-        <div id="jetton-container" class="grid-container" style="overflow-y: scroll; background-color: #00000050; width: 80%; height: 100%; border-radius: 20px; margin-top: 20px;">
-        </div>
+<div id="jetton-container" class="grid-container" style="background-color: #00000000; margin: 0; width: 90%; height: 100%; border-radius: 20px;">
+          </div>
+     
+     
         <!-- <p style="color:white; font-size:30px;">Siena Ton</p> -->
 <div id="ton-connect"></div>
 </div>
 <div class="navigation-panel">
-    <input type="text" id="search-box" placeholder="Your name here">
-    <button id="siena-menu-button">Menu</button>
+    <!-- <input type="text" id="search-box" placeholder="Your name here"> -->
+    <button id="sienav-account-button" class="seinavmb">Account</button>
+    <button id="sienav-jetton-button" class="seinavmb">Jettons</button>
 </div>
 
 <div id="siena-menu">
@@ -48,7 +50,6 @@ var CurrentAccount = {};
 function createTokenCard(label) {
     const tokenContainer = document.createElement('div');
     tokenContainer.classList.add('grid-item');
-    tokenContainer.style.cssText = "display: flex; flex-direction: column;";
 
     const textTokenBalance = document.createElement('p');
     textTokenBalance.textContent = label.balance + ' ' + label.symbol;
@@ -127,14 +128,14 @@ function newAccount(data){
 }
 
         // Получаем элементы кнопки и меню
-const menuButton = document.getElementById('siena-menu-button');
-const bottomMenu = document.getElementById('siena-menu');
+// const menuButton = document.getElementById('siena-menu-button');
+// const bottomMenu = document.getElementById('siena-menu');
 
-// Функция для переключения видимости меню
-menuButton.addEventListener('click', function() {
-  bottomMenu.style.bottom = "60px"
-//   bottomMenu.classList.toggle('hidden');
-});
+// // Функция для переключения видимости меню
+// menuButton.addEventListener('click', function() {
+//   bottomMenu.style.bottom = "60px"
+// //   bottomMenu.classList.toggle('hidden');
+// });
 var tonConnectUI;
  function  connect(){
      tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -190,7 +191,7 @@ if(tonConnectUI.connected){
     
   if (event.ctrlKey && event.key === 'q') {
     fetch(
-        'https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10')
+        'https://tonapi.io/v2/accounts/0:5a2d500059e217cea77cbf3d0e18ee5a6d5a6ab38ed5b1c5569c7560dd3966d8')
         //'https://tonapi.io/v2/accounts/0:694ea8b902cc86fde1d31368fd448f2f0ffc7eff9b5a16677870d77b79e8fc10/events?limit=25&before_lt=51569969000001')
 				
         .then(response => response.ok ? response.json() : Promise.reject('Error'))
@@ -201,8 +202,8 @@ if(tonConnectUI.connected){
                     console.log(CurrentAccount.main.name)
                     accountz = CurrentAccount.main.address;
                     document.getElementById("account-name").innerText = CurrentAccount.main.name;
-                    document.getElementById("account-balance").innerText = CurrentAccount.main.balance;
-                    document.getElementById("account-icon").src = CurrentAccount.main.icon;
+                    // document.getElementById("account-balance").innerText = CurrentAccount.main.balance;
+                    // document.getElementById("account-icon").src = CurrentAccount.main.icon;
 				console.log(data)
 
 				})
